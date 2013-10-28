@@ -7,7 +7,7 @@ import  qualified  Data.Dates  as  D
 type Symbol = T.Text
 
 data Quote = Quote
-  {  date     ::  D.DateTime
+  {  date     ::  T.Text -- D.DateTime
   ,  open     ::  Double
   ,  high     ::  Double
   ,  low      ::  Double
