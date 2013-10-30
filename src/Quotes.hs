@@ -1,16 +1,33 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Quotes where
 
 import Types
-import Aeson
 
+import Safe
+
+import qualified Data.Text as T
+import Data.Aeson
+import Data.Aeson.Types (Parser)
+
+import Control.Monad
 import Control.Applicative
 
+import qualified Data.ByteString.Lazy as B
+
+jsonIO = B.readFile "quote.json"
+
 instance FromJSON Quote where
-  parseJSON (Object o) =
+  parseJSON (Object o) = do
+    let readField :: (Read a) => T.Text -> Parser a
+        readField f = do
+          v <- o .: f
+          case readMay (T.unpack v) of
+            Nothing -> fail $ "Bad field: " ++ T.unpack f
+            Just r -> return r
     Quote <$> o .: "Date"
-          <*> o .: "Open"
-          <*> o .: "High"
-          <*> o .: "Low"
-          <*> o .: "Close"
-          <*> o .: "Volume"
+          <*> readField "Open"
+          <*> readField "High"
+          <*> readField "Low"
+          <*> readField "Close"
+          <*> readField "Volume"
   parseJSON _ = mzero

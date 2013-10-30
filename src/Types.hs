@@ -7,12 +7,12 @@ import  qualified  Data.Dates  as  D
 type Symbol = T.Text
 
 data Quote = Quote
-  {  date     ::  T.Text -- D.DateTime
+  {  date     ::  T.Text --D.DateTime
   ,  open     ::  Double
   ,  high     ::  Double
   ,  low      ::  Double
   ,  close    ::  Double
-  ,  volumne  ::  Double
+  ,  volume   ::  Double
   } deriving (Show)
 
 data HistoricalData = HistoricalData
