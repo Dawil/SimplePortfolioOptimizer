@@ -3,7 +3,9 @@ Simple Portfolio Optimizer
 
 This project produces a command line tool that reads several Symbols from the
 commandline and using a naive methodology generates an "optimal" portfolio
-combination and plots a comparison with an index.
+combination and plots a comparison with an index. I should mention that it's
+inspiried by the first assignment of the Computational Investing 1 course
+offered by Coursera.
 
 Methodology
 -----------
