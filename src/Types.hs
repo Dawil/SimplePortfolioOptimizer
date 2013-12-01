@@ -6,6 +6,11 @@ import  qualified  Data.Dates  as  D
 
 type Symbol = T.Text
 
+data Query = Query
+  { count :: Int
+  , results :: [Quote]
+  } deriving Show
+
 data Quote = Quote
   {  date     ::  D.DateTime
   ,  open     ::  Double

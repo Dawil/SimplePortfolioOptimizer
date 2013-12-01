@@ -7,6 +7,7 @@ import Safe
 
 import qualified Data.Text as T
 import qualified Data.Dates as D
+import qualified Data.HashMap.Strict as H
 import Data.Aeson
 import Data.Aeson.Types (Parser)
 
@@ -16,6 +17,15 @@ import Control.Applicative
 import qualified Data.ByteString.Lazy as B
 
 jsonIO = B.readFile "quote.json"
+
+instance FromJSON Query where
+  parseJSON (Object o) = do
+    let o' .! f = case o' H.! f of
+                    (Object o'') -> o''
+                    _ -> error $ "Bad field: " ++ T.unpack f
+    Query <$> o .! "query" .: "count"
+          <*> o .! "query" .! "results" .: "quote"
+  parseJSON _ = mzero
 
 instance FromJSON Quote where
   parseJSON (Object o) = do
