@@ -11,15 +11,6 @@ data Query = Query
   , results :: [Quote]
   } deriving Show
 
-data Quote = Quote
-  {  date     ::  D.DateTime
-  ,  open     ::  Double
-  ,  high     ::  Double
-  ,  low      ::  Double
-  ,  close    ::  Double
-  ,  volume   ::  Double
-  } deriving (Show)
-
 data HistoricalData = HistoricalData
   { symbol :: Symbol
   , quotes :: [Quote]
@@ -27,6 +18,15 @@ data HistoricalData = HistoricalData
 
 data Portfolio = Portfolio
   { allocations :: [(HistoricalData,Int)]
+  } deriving (Show)
+
+data Quote = Quote
+  {  date     ::  D.DateTime
+  ,  open     ::  Double
+  ,  high     ::  Double
+  ,  low      ::  Double
+  ,  close    ::  Double
+  ,  volume   ::  Double
   } deriving (Show)
 
 data Assessment = Assessment

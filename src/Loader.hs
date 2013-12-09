@@ -1,20 +1,35 @@
 module Loader where
 
+import Types
+import Quotes
+
+import qualified Data.Aeson as A
+import qualified Data.ByteString.Lazy.Char8 as B
 import Network.HTTP.Base
 import Network.HTTP
 
 
 -- This is the module where the functions for loading quotes from the Yahoo API
 -- are.
-type Symbol = String
 type Date = String
 type URL = String
+
+-- TODO don't hardcode dates
+-- TODO make function total (not partial)
+symbolToQuotes :: String -> IO [Quote]
+symbolToQuotes symbol = do
+  let url = constructQuotesQuery [symbol] "2009-09-11" "2010-03-10"
+  rsp <- getRsp url
+  body <- getResponseBody rsp
+  return $ case parseBody body of
+            Right (Query _ res) -> res
+            _ -> error $ "Error loading symbol: " ++ symbol
 
 getRsp query = simpleHTTP $ getRequest query
 parseBody :: String -> Either String Query
 parseBody body = A.eitherDecode $ B.pack body
 
-constructQuotesQuery :: [Symbol] -> Date -> Date -> URL
+constructQuotesQuery :: [String] -> Date -> Date -> URL
 constructQuotesQuery symbols startDate endDate =
   "http://query.yahooapis.com/v1/public/yql?q=" ++ yqlString ++ "&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback="
   where

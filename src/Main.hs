@@ -2,10 +2,13 @@ module Main where
 
 import System.Environment (getArgs)
 import Data.Char (toUpper)
+import Network.HTTP
 
 import Types
 import Quotes
 import Loader
+import Logic
+
 import qualified Data.Aeson as A
 import qualified Data.ByteString.Lazy.Char8 as B
 
