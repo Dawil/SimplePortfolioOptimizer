@@ -3,8 +3,10 @@ where
 
 import  qualified  Data.Text   as  T
 import  qualified  Data.Dates  as  D
+import Data.Monoid
+import Data.Monoid.Statistics.Numeric
 
-type Symbol = T.Text
+type Symbol = String
 
 data Query = Query
   { count :: Int
@@ -18,7 +20,10 @@ data HistoricalData = HistoricalData
 
 data Portfolio = Portfolio
   { allocations :: [(HistoricalData,Int)]
-  } deriving (Show)
+  }
+
+instance Show Portfolio where
+  show p = show $ map (\(hd,i) -> (symbol hd, i)) $ allocations p
 
 data Quote = Quote
   {  date     ::  D.DateTime
@@ -30,11 +35,22 @@ data Quote = Quote
   } deriving (Show)
 
 data Assessment = Assessment
-  { stddev :: Double
-  , average :: Double
-  , sharpeRatio :: Double
+  { variance :: Variance
+  , mean :: Mean
   , cumulativeReturns :: Double
   } deriving (Show, Eq)
 
+getSharpeRatio :: Assessment -> Double
+getSharpeRatio assessment = average / stdDev
+  where stdDev = sqrt . calcVariance . variance $ assessment
+        average = calcMean $ mean assessment
+
 instance Ord Assessment where
-  compare a1 a2 = compare (sharpeRatio a1) (sharpeRatio a2)
+  compare a1 a2 = compare (getSharpeRatio a1) (getSharpeRatio a2)
+
+instance Monoid Assessment where
+  mempty = Assessment (Variance 0 0 0) (Mean 0 0) 0
+  mappend a1 a2 = Assessment var average returns
+    where var = variance a1 <> variance a2
+          average = mean a1 <> mean a2
+          returns = cumulativeReturns a1 + cumulativeReturns a2

@@ -16,14 +16,15 @@ type URL = String
 
 -- TODO don't hardcode dates
 -- TODO make function total (not partial)
-symbolToQuotes :: String -> IO [Quote]
-symbolToQuotes symbol = do
+symbolToHistoricalData :: String -> IO HistoricalData
+symbolToHistoricalData symbol = do
   let url = constructQuotesQuery [symbol] "2009-09-11" "2010-03-10"
   rsp <- getRsp url
   body <- getResponseBody rsp
-  return $ case parseBody body of
-            Right (Query _ res) -> res
-            _ -> error $ "Error loading symbol: " ++ symbol
+  return . HistoricalData symbol $
+    case parseBody body of
+      Right (Query _ res) -> res
+      _ -> error $ "Error loading symbol: " ++ symbol
 
 getRsp query = simpleHTTP $ getRequest query
 parseBody :: String -> Either String Query
