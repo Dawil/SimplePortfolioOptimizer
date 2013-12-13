@@ -17,9 +17,6 @@ main :: IO ()
 main = do
   symbols <- fmap (map (map toUpper) ) getArgs
   putStr $ "Fetching quotes for " ++ show symbols ++ "..."
-  rsp <- getRsp $ constructQuotesQuery symbols "2009-09-11" "2010-03-10"
-  putStrLn "Done."
-  body <- getResponseBody rsp >>= return . parseBody
-  case body of
-    Right query -> print . head $ results query
-    Left err -> putStrLn $ "Error: " ++ err
+  companies <- mapM symbolToHistoricalData symbols
+  putStrLn " Done."
+  print . assessPortfolio $ optimizePortfolio companies

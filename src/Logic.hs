@@ -34,9 +34,10 @@ optimizePortfolio = maximumBy comparator . makePossiblePortfolios
 -- e.g.:
 --   input = [company1, company2]
 --   output = [[(company1,0),(company2,10)],[(company1,1),(company2,9)],...]
+-- TODO understand replicateM k [0..n]
 makePossiblePortfolios :: [HistoricalData] -> [Portfolio]
 makePossiblePortfolios historicalData = map (Portfolio . zip historicalData) possibleAllocations
- where possibleAllocations = filter ((== 10) . sum) $ replicateM 4 [0..10]
+  where possibleAllocations = filter ((== 10) . sum) $ replicateM (length historicalData) [0..10]
 
 assessPortfolio :: Portfolio -> Assessment
 assessPortfolio = mconcat . map (assess . quotes . fst) . allocations
