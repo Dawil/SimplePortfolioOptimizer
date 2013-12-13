@@ -19,4 +19,6 @@ main = do
   putStr $ "Fetching quotes for " ++ show symbols ++ "..."
   companies <- mapM symbolToHistoricalData symbols
   putStrLn " Done."
-  print . assessPortfolio $ optimizePortfolio companies
+  let portfolio = optimizePortfolio companies
+  putStrLn "Optimal detected portfolio is:"
+  print portfolio

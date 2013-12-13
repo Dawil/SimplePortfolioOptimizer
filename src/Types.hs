@@ -16,14 +16,14 @@ data Query = Query
 data HistoricalData = HistoricalData
   { symbol :: Symbol
   , quotes :: [Quote]
-  } deriving (Show)
+  } deriving (Eq)
 
-data Portfolio = Portfolio
-  { allocations :: [(HistoricalData,Int)]
-  }
+instance Show HistoricalData where
+  show (HistoricalData symbol quotes) = show (symbol, length quotes)
 
-instance Show Portfolio where
-  show p = show $ map (\(hd,i) -> (symbol hd, i)) $ allocations p
+type Weight = Double
+type Portfolio = [(HistoricalData,Weight)]
+type Performance = [Double]
 
 data Quote = Quote
   {  date     ::  D.DateTime
@@ -32,13 +32,17 @@ data Quote = Quote
   ,  low      ::  Double
   ,  close    ::  Double
   ,  volume   ::  Double
-  } deriving (Show)
+  } deriving (Show,Eq)
 
 data Assessment = Assessment
   { variance :: Variance
   , mean :: Mean
   , cumulativeReturns :: Double
-  } deriving (Show, Eq)
+  , dailyValues :: [Double]
+  } deriving (Eq)
+
+instance Show Assessment where
+  show (Assessment v m c _) = show (v,m,c)
 
 getSharpeRatio :: Assessment -> Double
 getSharpeRatio assessment = average / stdDev
@@ -47,10 +51,3 @@ getSharpeRatio assessment = average / stdDev
 
 instance Ord Assessment where
   compare a1 a2 = compare (getSharpeRatio a1) (getSharpeRatio a2)
-
-instance Monoid Assessment where
-  mempty = Assessment (Variance 0 0 0) (Mean 0 0) 0
-  mappend a1 a2 = Assessment var average returns
-    where var = variance a1 <> variance a2
-          average = mean a1 <> mean a2
-          returns = cumulativeReturns a1 + cumulativeReturns a2
